@@ -146,7 +146,7 @@ class DensityEstimator(object):
                 print("Density Estimator Converged")
                 break
            
-        return model, best_params
+        return model, opt.target
     
     def posterior_samples(self, key, data, network, network_pars, n_samples=1000):
 
