@@ -111,6 +111,7 @@ class DensityEstimator(object):
         val_loss = float("-Inf")
         best_val_loss = 0.
         epochs_since_last_improvement = 0
+        best_param = []
         for ep in range(1, num_epochs + 1):
             losses[ep] = []
             
@@ -124,9 +125,7 @@ class DensityEstimator(object):
                     p_bar.set_postfix_str("Epoch {0},Batch {1},Loss: {2:.3f},Running Loss: {3:.3f}"
                                             .format(ep, bi + 1, loss, np.mean(losses[ep])))
                     p_bar.update(1) 
-            
-            if epochs_since_last_improvement==1:
-                    best_params = opt.target
+            best_param.append(opt.target)
             
             loss_v = 0.
             for bi, batch in enumerate(val_ds):
@@ -143,7 +142,10 @@ class DensityEstimator(object):
 
              # If no validation improvement over many epochs, stop training.
             if epochs_since_last_improvement > self._stop_after_epochs - 1:
+                best_params = best_param[-(1 + self._stop_after_epochs)]
                 print("Density Estimator Converged")
+                print("Total Epochs passed", ep)
+                print("Params from epoch", (ep -(1 + self._stop_after_epochs) ))
                 break
            
         return model, opt.target
